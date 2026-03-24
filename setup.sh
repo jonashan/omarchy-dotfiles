@@ -8,6 +8,10 @@ echo "=== Applying Hyprland config ==="
 bash "$DIR/hypr/setup.sh"
 
 echo ""
+echo "=== Applying web apps config ==="
+bash "$DIR/webapps/setup.sh"
+
+echo ""
 echo "=== Applying Waybar config ==="
 bash "$DIR/waybar/setup.sh"
 
