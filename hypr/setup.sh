@@ -1,0 +1,26 @@
+#!/bin/bash
+# Patches Omarchy Hyprland config with custom keyboard settings
+set -euo pipefail
+
+INPUT_CONF="$HOME/.config/hypr/input.conf"
+BINDINGS_CONF="$HOME/.config/hypr/bindings.conf"
+
+# --- input.conf: Set keyboard layouts to US (default) + DK ---
+if [[ -f "$INPUT_CONF" ]]; then
+  sed -i 's/^\(\s*\)kb_layout\s*=.*/\1kb_layout = us,dk/' "$INPUT_CONF"
+  echo "Set kb_layout = us,dk in input.conf"
+else
+  echo "WARNING: $INPUT_CONF not found"
+fi
+
+# --- bindings.conf: Add language switch keybind (Alt + Super + .) ---
+if [[ -f "$BINDINGS_CONF" ]]; then
+  if ! grep -q 'switchxkblayout' "$BINDINGS_CONF"; then
+    sed -i '/^# Add extra bindings/a bindd = SUPER ALT, period, Switch keyboard layout, exec, hyprctl switchxkblayout all next' "$BINDINGS_CONF"
+    echo "Added language switch keybind (Super + Alt + .)"
+  else
+    echo "Language switch keybind already present"
+  fi
+else
+  echo "WARNING: $BINDINGS_CONF not found"
+fi
