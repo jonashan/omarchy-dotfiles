@@ -1,6 +1,8 @@
 #!/bin/bash
-# Patches Omarchy Hyprland config with custom keyboard settings
+# Patches Omarchy Hyprland config with custom settings
 set -euo pipefail
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
 
 INPUT_CONF="$HOME/.config/hypr/input.conf"
 BINDINGS_CONF="$HOME/.config/hypr/bindings.conf"
@@ -24,3 +26,6 @@ if [[ -f "$BINDINGS_CONF" ]]; then
 else
   echo "WARNING: $BINDINGS_CONF not found"
 fi
+
+# --- hypridle.conf: Lock screen with screensaver after 1 minute ---
+bash "$DIR/setup-hypridle.sh"
