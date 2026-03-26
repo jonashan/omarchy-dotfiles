@@ -18,7 +18,7 @@ fi
 # --- bindings.conf: Add language switch keybind (Alt + Super + .) ---
 if [[ -f "$BINDINGS_CONF" ]]; then
   if ! grep -q 'switchxkblayout' "$BINDINGS_CONF"; then
-    sed -i '/^# Add extra bindings/a bindd = SUPER ALT, period, Switch keyboard layout, exec, hyprctl switchxkblayout all next' "$BINDINGS_CONF"
+    sed -i '/^# Overwrite existing bindings/i bindd = SUPER ALT, period, Switch keyboard layout, exec, hyprctl switchxkblayout all next' "$BINDINGS_CONF"
     echo "Added language switch keybind (Super + Alt + .)"
   else
     echo "Language switch keybind already present"

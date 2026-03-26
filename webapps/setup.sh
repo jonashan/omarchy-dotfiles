@@ -44,7 +44,7 @@ if [[ -f "$BINDINGS" ]]; then
 
   # Add Google Calendar keybind if not present
   if ! grep -q 'Google Calendar' "$BINDINGS"; then
-    sed -i '/^# Add extra bindings/a bindd = SUPER SHIFT, C, Google Calendar, exec, omarchy-launch-webapp "https://calendar.google.com"' "$BINDINGS"
+    sed -i '/^# Overwrite existing bindings/i bindd = SUPER SHIFT, C, Google Calendar, exec, omarchy-launch-webapp "https://calendar.google.com"' "$BINDINGS"
     echo "Added Google Calendar keybind (Super + Shift + C)"
   else
     echo "Google Calendar keybind already present"
@@ -52,7 +52,7 @@ if [[ -f "$BINDINGS" ]]; then
 
   # Add Gmail keybind if not present
   if ! grep -q 'Gmail' "$BINDINGS"; then
-    sed -i '/^# Add extra bindings/a bindd = SUPER SHIFT, E, Gmail, exec, omarchy-launch-webapp "https://mail.google.com"' "$BINDINGS"
+    sed -i '/^# Overwrite existing bindings/i bindd = SUPER SHIFT, E, Gmail, exec, omarchy-launch-webapp "https://mail.google.com"' "$BINDINGS"
     echo "Added Gmail keybind (Super + Shift + E)"
   else
     echo "Gmail keybind already present"
