@@ -27,5 +27,18 @@ else
   echo "WARNING: $BINDINGS_CONF not found"
 fi
 
+# --- autostart.conf: Start 1Password on login for SSH agent ---
+AUTOSTART_CONF="$HOME/.config/hypr/autostart.conf"
+if [[ -f "$AUTOSTART_CONF" ]]; then
+  if ! grep -q '1password' "$AUTOSTART_CONF"; then
+    echo 'exec-once = uwsm-app -- 1password --silent' >> "$AUTOSTART_CONF"
+    echo "Added 1Password autostart for SSH agent"
+  else
+    echo "1Password autostart already present"
+  fi
+else
+  echo "WARNING: $AUTOSTART_CONF not found"
+fi
+
 # --- hypridle.conf: Lock screen with screensaver after 1 minute ---
 bash "$DIR/setup-hypridle.sh"
