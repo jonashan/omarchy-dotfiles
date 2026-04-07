@@ -1,72 +1,36 @@
 #!/bin/bash
-# Patches hypridle.conf: screensaver at 1min, lock when screensaver is dismissed
+# Patches hypridle.conf: disable screensaver, lock after 1min idle
 set -euo pipefail
 
 HYPRIDLE_CONF="$HOME/.config/hypr/hypridle.conf"
-WRAPPER="$HOME/.local/bin/omarchy-screensaver-then-lock"
 
 if [[ ! -f "$HYPRIDLE_CONF" ]]; then
   echo "WARNING: $HYPRIDLE_CONF not found"
   exit 1
 fi
 
-# Install the wrapper script
-mkdir -p "$(dirname "$WRAPPER")"
-cat > "$WRAPPER" << 'SCRIPT'
-#!/bin/bash
-# Launch screensaver, then lock when it's dismissed
-pidof hyprlock && exit 0
+# Remove the old wrapper script if it exists
+rm -f "$HOME/.local/bin/omarchy-screensaver-then-lock"
 
-omarchy-launch-screensaver
-
-# Wait for the screensaver terminal to be dismissed (user pressed a key)
-sleep 0.5
-while pidof -x omarchy-cmd-screensaver >/dev/null; do
-  sleep 0.1
-done
-
-# Lock the screen
-loginctl lock-session
-SCRIPT
-chmod +x "$WRAPPER"
-
-# Patch hypridle.conf
 python3 -c "
 import re
 
 with open('$HYPRIDLE_CONF') as f:
     content = f.read()
 
-# Remove any standalone lock-session listener block
+# Remove any screensaver listener block
 content = re.sub(
-    r'listener \{[^}]*on-timeout = loginctl lock-session[^}]*\}\n*',
+    r'listener \{[^}]*screensaver[^}]*\}\n*',
     '',
     content
 )
 
-# Replace the screensaver listener block with the wrapper
+# Update the lock-session listener timeout to 60s
 content = re.sub(
-    r'listener \{[^}]*omarchy-launch-screensaver[^}]*\}',
-    '''listener {
-    timeout = 60                                  # 1min
-    on-timeout = omarchy-screensaver-then-lock    # screensaver, then lock on dismiss
-}''',
+    r'(listener \{[^}]*?)timeout = \d+(\s*#[^\n]*)?\n([^}]*on-timeout = loginctl lock-session)',
+    r'\1timeout = 60                                  # 1min\n\3',
     content
 )
-
-# If no matching listener existed, insert one after the general block
-if 'omarchy-screensaver-then-lock' not in content:
-    content = content.replace(
-        '}\n\nlistener',
-        '''}\n
-listener {
-    timeout = 60                                  # 1min
-    on-timeout = omarchy-screensaver-then-lock    # screensaver, then lock on dismiss
-}
-
-listener''',
-        1
-    )
 
 with open('$HYPRIDLE_CONF', 'w') as f:
     f.write(content)
@@ -75,4 +39,4 @@ with open('$HYPRIDLE_CONF', 'w') as f:
 # Restart hypridle to pick up changes (it doesn't auto-reload)
 killall hypridle 2>/dev/null; sleep 0.2; hypridle &
 
-echo "Configured screensaver at 60s + lock on dismiss in hypridle.conf"
+echo "Configured: no screensaver, lock at 60s idle"
