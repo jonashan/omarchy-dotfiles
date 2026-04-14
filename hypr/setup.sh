@@ -44,5 +44,5 @@ else
   echo "WARNING: $AUTOSTART_CONF not found"
 fi
 
-# --- hypridle.conf: Lock screen with screensaver after 1 minute ---
+# --- hypridle.conf: Lock screen after 3 minutes ---
 bash "$DIR/setup-hypridle.sh"

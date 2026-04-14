@@ -16,4 +16,8 @@ echo "=== Applying Waybar config ==="
 bash "$DIR/waybar/setup.sh"
 
 echo ""
+echo "=== Applying aliases ==="
+bash "$DIR/aliases/setup.sh"
+
+echo ""
 echo "Done!"
