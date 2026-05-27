@@ -31,6 +31,14 @@ else
   echo "Gmail already installed"
 fi
 
+# --- Install Linear web app (idempotent) ---
+if [[ ! -f "$HOME/.local/share/applications/Linear.desktop" ]]; then
+  omarchy-webapp-install "Linear" "https://linear.app" ""
+  echo "Installed Linear web app"
+else
+  echo "Linear already installed"
+fi
+
 # --- Patch keybindings ---
 if [[ -f "$BINDINGS" ]]; then
   # Remove HEY Calendar keybind (SUPER SHIFT, C)
@@ -56,6 +64,14 @@ if [[ -f "$BINDINGS" ]]; then
     echo "Added Gmail keybind (Super + Shift + E)"
   else
     echo "Gmail keybind already present"
+  fi
+
+  # Add Linear keybind if not present
+  if ! grep -q 'Linear' "$BINDINGS"; then
+    sed -i '/^# Overwrite existing bindings/i bindd = CTRL SUPER, K, Linear, exec, omarchy-launch-webapp "https://linear.app"' "$BINDINGS"
+    echo "Added Linear keybind (Ctrl + Super + K)"
+  else
+    echo "Linear keybind already present"
   fi
 else
   echo "WARNING: $BINDINGS not found"
