@@ -39,6 +39,22 @@ else
   echo "Linear already installed"
 fi
 
+# --- Install TeamEffect V1 - Repo web app (idempotent) ---
+if [[ ! -f "$HOME/.local/share/applications/TeamEffect V1 - Repo.desktop" ]]; then
+  omarchy-webapp-install "TeamEffect V1 - Repo" "https://github.com/teameffect/teameffect" ""
+  echo "Installed TeamEffect V1 - Repo web app"
+else
+  echo "TeamEffect V1 - Repo already installed"
+fi
+
+# --- Install TeamEffect V2 - Repo web app (idempotent) ---
+if [[ ! -f "$HOME/.local/share/applications/TeamEffect V2 - Repo.desktop" ]]; then
+  omarchy-webapp-install "TeamEffect V2 - Repo" "https://github.com/teameffect/teameffect-v2" ""
+  echo "Installed TeamEffect V2 - Repo web app"
+else
+  echo "TeamEffect V2 - Repo already installed"
+fi
+
 # --- Patch keybindings ---
 if [[ -f "$BINDINGS" ]]; then
   # Remove HEY Calendar keybind (SUPER SHIFT, C)
@@ -49,6 +65,9 @@ if [[ -f "$BINDINGS" ]]; then
 
   # Remove WhatsApp keybind
   sed -i '/whatsapp/Id' "$BINDINGS"
+
+  # Remove Signal keybind
+  sed -i '/signal-desktop/d' "$BINDINGS"
 
   # Add Google Calendar keybind if not present
   if ! grep -q 'Google Calendar' "$BINDINGS"; then
@@ -76,3 +95,18 @@ if [[ -f "$BINDINGS" ]]; then
 else
   echo "WARNING: $BINDINGS not found"
 fi
+
+# --- Uninstall unwanted system packages (runs last; needs sudo) ---
+REMOVE_PKGS=("signal-desktop")
+
+for pkg in "${REMOVE_PKGS[@]}"; do
+  if pacman -Q "$pkg" &>/dev/null; then
+    if sudo -n true 2>/dev/null || [[ -t 0 ]]; then
+      sudo pacman -Rns --noconfirm "$pkg" && echo "Uninstalled $pkg"
+    else
+      echo "WARNING: cannot uninstall $pkg without a TTY for sudo. Run: sudo pacman -Rns $pkg"
+    fi
+  else
+    echo "$pkg not installed, skipping"
+  fi
+done
