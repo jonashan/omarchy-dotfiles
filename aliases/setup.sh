@@ -6,6 +6,7 @@ BASHRC="$HOME/.bashrc"
 
 declare -A ALIASES=(
   ["lg"]="lazygit"
+  ["ld"]="lazygit"
 )
 
 for name in "${!ALIASES[@]}"; do
