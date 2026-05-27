@@ -27,6 +27,20 @@ if [[ -f "$BINDINGS_CONF" ]]; then
   else
     echo "Language switch keybind already present"
   fi
+
+  # --- Drop any previous Super + Shift + L Lazygit binding ---
+  if grep -q 'SUPER SHIFT, L, Lazygit' "$BINDINGS_CONF"; then
+    sed -i '/SUPER SHIFT, L, Lazygit/d' "$BINDINGS_CONF"
+    echo "Removed stale Lazygit keybind (Super + Shift + L)"
+  fi
+
+  # --- Lazygit keybind (Super + Shift + G), opens in ~/Work/teameffect-v2 ---
+  if ! grep -q 'omarchy-launch-tui lazygit' "$BINDINGS_CONF"; then
+    sed -i '/^# Overwrite existing bindings/i bindd = SUPER SHIFT, G, Lazygit, exec, omarchy-launch-tui lazygit -p /home/jonas/Work/teameffect-v2' "$BINDINGS_CONF"
+    echo "Added Lazygit keybind (Super + Shift + G)"
+  else
+    echo "Lazygit keybind already present"
+  fi
 else
   echo "WARNING: $BINDINGS_CONF not found"
 fi
