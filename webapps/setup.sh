@@ -87,8 +87,8 @@ if [[ -f "$BINDINGS" ]]; then
 
   # Add Linear keybind if not present
   if ! grep -q 'Linear' "$BINDINGS"; then
-    sed -i '/^# Overwrite existing bindings/i bindd = CTRL SUPER, K, Linear, exec, omarchy-launch-webapp "https://linear.app"' "$BINDINGS"
-    echo "Added Linear keybind (Ctrl + Super + K)"
+    sed -i '/^# Overwrite existing bindings/i bindd = SUPER SHIFT, K, Linear, exec, omarchy-launch-webapp "https://linear.app"' "$BINDINGS"
+    echo "Added Linear keybind (Super + Shift + K)"
   else
     echo "Linear keybind already present"
   fi
