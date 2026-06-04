@@ -7,6 +7,8 @@ BASHRC="$HOME/.bashrc"
 declare -A ALIASES=(
   ["lg"]="lazygit"
   ["ld"]="lazygit"
+  ["te"]="cd ~/Work/TeamEffect/"
+  ["te2"]="cd ~/Work/teameffect-v2/"
 )
 
 for name in "${!ALIASES[@]}"; do
