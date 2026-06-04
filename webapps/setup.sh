@@ -39,6 +39,14 @@ else
   echo "Linear already installed"
 fi
 
+# --- Install Messenger web app (idempotent) ---
+if [[ ! -f "$HOME/.local/share/applications/Messenger.desktop" ]]; then
+  omarchy-webapp-install "Messenger" "https://www.messenger.com" ""
+  echo "Installed Messenger web app"
+else
+  echo "Messenger already installed"
+fi
+
 # --- Install TeamEffect V1 - Repo web app (idempotent) ---
 if [[ ! -f "$HOME/.local/share/applications/TeamEffect V1 - Repo.desktop" ]]; then
   omarchy-webapp-install "TeamEffect V1 - Repo" "https://github.com/teameffect/teameffect" ""
