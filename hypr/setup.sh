@@ -12,9 +12,15 @@ if [[ -f "$INPUT_CONF" ]]; then
   sed -i 's/^\(\s*\)kb_layout\s*=.*/\1kb_layout = us,dk/' "$INPUT_CONF"
   echo "Set kb_layout = us,dk in input.conf"
 
-  # Disable mouse acceleration
-  sed -i 's/^\(\s*\)force_no_accel\s*=.*/\1force_no_accel = true/' "$INPUT_CONF"
-  echo "Set force_no_accel = true in input.conf"
+  # Disable mouse acceleration (flat 1:1 profile). The Omarchy default ships this
+  # line commented as "# accel_profile = flat"; match it whether commented or not.
+  if grep -qE '^\s*#?\s*accel_profile\s*=' "$INPUT_CONF"; then
+    sed -i 's/^\(\s*\)#\?\s*accel_profile\s*=.*/\1accel_profile = flat/' "$INPUT_CONF"
+  else
+    # No line to replace — insert one inside the input { } block.
+    sed -i '/^input {/a\  accel_profile = flat' "$INPUT_CONF"
+  fi
+  echo "Set accel_profile = flat in input.conf"
 else
   echo "WARNING: $INPUT_CONF not found"
 fi

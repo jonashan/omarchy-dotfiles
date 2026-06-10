@@ -8,8 +8,9 @@ STYLE="$HOME/.config/waybar/style.css"
 # --- config.jsonc: Add hyprland/language module ---
 if [[ -f "$CONFIG" ]]; then
   if ! grep -q 'hyprland/language' "$CONFIG"; then
-    # Add to modules-right after tray-expander
-    sed -i '/"group\/tray-expander"/s/$/\n    "hyprland\/language",/' "$CONFIG"
+    # Add to modules-right after tray-expander (anchor on the array entry — the
+    # line ending in a comma — NOT the "group/tray-expander": { object definition)
+    sed -i '/"group\/tray-expander",$/s/$/\n    "hyprland\/language",/' "$CONFIG"
 
     # Add module config before "tray" section
     sed -i '/"tray": {/i\
