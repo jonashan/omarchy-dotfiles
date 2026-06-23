@@ -20,4 +20,8 @@ echo "=== Applying aliases ==="
 bash "$DIR/aliases/setup.sh"
 
 echo ""
+echo "=== Applying Claude Code config ==="
+bash "$DIR/claude/setup.sh"
+
+echo ""
 echo "Done!"

@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Personal dotfiles for an [Omarchy](https://omarchy.org) (Arch Linux + Hyprland) desktop. Rather than storing config files to copy into place, every script here **patches the live Omarchy-managed configs in `~/.config/`** in place. The repo owns the deltas, not the files.
 
+The one exception is `claude/`, which owns its files wholesale: `claude/setup.sh` **symlinks** the Claude Code skills and `settings.json` into `~/.claude/` so edits Claude makes flow straight back into this repo.
+
 ## Commands
 
 ```bash
@@ -15,9 +17,10 @@ bash hypr/setup-hypridle.sh # Idle lock only (called by hypr/setup.sh)
 bash webapps/setup.sh       # Install/remove PWAs + their keybinds
 bash waybar/setup.sh        # Waybar language indicator
 bash aliases/setup.sh       # Append shell aliases to ~/.bashrc
+bash claude/setup.sh        # Symlink Claude Code skills + settings.json into ~/.claude
 ```
 
-There is no build, lint, or test step — these are bash scripts run directly on the target machine. `setup.sh` orchestrates the sub-scripts in order: hypr → webapps → waybar → aliases.
+There is no build, lint, or test step — these are bash scripts run directly on the target machine. `setup.sh` orchestrates the sub-scripts in order: hypr → webapps → waybar → aliases → claude.
 
 ## Conventions that matter
 
