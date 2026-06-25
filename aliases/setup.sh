@@ -9,6 +9,7 @@ declare -A ALIASES=(
   ["ld"]="lazygit"
   ["te"]="cd ~/Work/TeamEffect/"
   ["te2"]="cd ~/Work/teameffect-v2/"
+  ["ad"]="agent-deck"
 )
 
 for name in "${!ALIASES[@]}"; do
