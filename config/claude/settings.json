@@ -1,4 +1,7 @@
 {
+  "permissions": {
+    "defaultMode": "auto"
+  },
   "hooks": {
     "Notification": [
       {
@@ -76,9 +79,7 @@
       }
     ]
   },
-  "permissions": {
-    "defaultMode": "auto"
-  },
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "tui": "fullscreen"
+  "model": "claude-fable-5[1m]"
 }
