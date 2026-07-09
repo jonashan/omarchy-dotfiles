@@ -18,6 +18,7 @@ bash install/setup.sh               # Run every installer in install/
 bash config/setup.sh                # Apply every config in config/
 bash install/packages/setup.sh      # Install AUR/repo packages (agent-deck-bin, ...)
 bash install/webapps/setup.sh       # Install/remove PWAs + their keybinds
+bash install/dev-services/setup.sh  # Run Postgres + Redis dev containers (docker, needs sudo)
 bash config/hypr/setup.sh           # Hyprland: keyboard layouts, keybinds, autostart, idle lock
 bash config/hypr/setup-hypridle.sh  # Idle lock only (called by config/hypr/setup.sh)
 bash config/waybar/setup.sh         # Waybar language indicator
