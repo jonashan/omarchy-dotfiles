@@ -21,3 +21,12 @@ for name in "${!ALIASES[@]}"; do
     echo "Alias already present: $name"
   fi
 done
+
+# direnv shell hook
+direnv_hook='eval "$(direnv hook bash)"'
+if ! grep -qF "$direnv_hook" "$BASHRC"; then
+  echo "$direnv_hook" >> "$BASHRC"
+  echo "Added direnv hook"
+else
+  echo "direnv hook already present"
+fi

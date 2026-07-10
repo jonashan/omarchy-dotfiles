@@ -11,6 +11,7 @@ AUR_PKGS=(
 
 # Official-repo packages — installed via pacman through omarchy-pkg-add.
 REPO_PKGS=(
+  direnv
 )
 
 install_pkgs() {
