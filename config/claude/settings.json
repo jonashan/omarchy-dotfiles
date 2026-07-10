@@ -2,6 +2,7 @@
   "permissions": {
     "defaultMode": "auto"
   },
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "Notification": [
       {
@@ -79,7 +80,18 @@
       }
     ]
   },
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
+  },
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "model": "claude-fable-5[1m]"
+  "skipWorkflowUsageWarning": true,
+  "enabledPlugins": {
+    "ponytail@ponytail": true
+  }
 }
