@@ -91,6 +91,10 @@
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/jonas/.claude/statusline-command.sh"
+  },
   "enabledPlugins": {
     "ponytail@ponytail": true
   }

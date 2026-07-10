@@ -30,6 +30,7 @@ link() {
 # settings.json (NOT settings.local.json or .credentials.json — those stay machine-local)
 link "$DIR/settings.json" "$CLAUDE_DIR/settings.json"
 link "$DIR/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
+link "$DIR/statusline-command.sh" "$CLAUDE_DIR/statusline-command.sh"
 
 # Each skill directory
 for skill in "$DIR"/skills/*/; do
