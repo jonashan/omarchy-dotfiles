@@ -19,6 +19,7 @@ bash config/setup.sh                # Apply every config in config/
 bash install/webapps/setup.sh       # Install/remove web apps
 bash install/dev-services/setup.sh  # Run Postgres + Redis dev containers (docker)
 bash config/hypr/setup.sh           # Hyprland: keyboard layouts, mouse accel
+bash config/shell/setup.sh          # Omarchy shell: lock screen after 1 min idle
 bash config/aliases/setup.sh        # Symlink aliases.sh to ~/.bash_aliases + source it
 bash config/claude/setup.sh         # Symlink Claude Code skills + settings.json into ~/.claude
 ```
@@ -52,4 +53,4 @@ There is no build, lint, or test step — these are bash scripts run directly on
 
 ## Not managed here
 
-Deliberately out of scope, after the Quattro cleanup: package installs, the status bar (Omarchy's shell ships a keyboard-layout widget), and idle/lock timing (`~/.config/omarchy/shell.json`).
+Deliberately out of scope, after the Quattro cleanup: package installs and the status bar (Omarchy's shell ships a keyboard-layout widget).

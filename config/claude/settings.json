@@ -1,8 +1,15 @@
 {
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "acceptEdits"
   },
   "model": "claude-fable-5[1m]",
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "ponytail@ponytail": true
+  },
   "extraKnownMarketplaces": {
     "ponytail": {
       "source": {
@@ -12,14 +19,7 @@
     }
   },
   "tui": "fullscreen",
-  "theme": "dark",
-  "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
-  },
-  "enabledPlugins": {
-    "ponytail@ponytail": true
-  }
+  "theme": "dark",
+  "hooks": {"SessionStart":[{"matcher":"*","hooks":[{"type":"command","command":"bash '/home/jsc/.claude/hooks/herdr-agent-state.sh' session","timeout":10}]}]}
 }
