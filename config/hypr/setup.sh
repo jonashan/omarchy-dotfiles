@@ -1,68 +1,59 @@
 #!/bin/bash
-# Patches Omarchy Hyprland config with custom settings
+# Patches Omarchy's Hyprland Lua config with custom input settings.
+#
+# Omarchy 4 (Quattro) configures Hyprland in Lua, not .conf. The user files in
+# ~/.config/hypr/ are loaded *after* Omarchy's defaults, so a later hl.config()
+# call simply overrides the keys it sets. We append a marked block rather than
+# uncommenting the shipped template, so package updates can rewrite the template
+# freely without breaking us.
 set -euo pipefail
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
+INPUT_LUA="$HOME/.config/hypr/input.lua"
+BINDINGS_LUA="$HOME/.config/hypr/bindings.lua"
 
-INPUT_CONF="$HOME/.config/hypr/input.conf"
-BINDINGS_CONF="$HOME/.config/hypr/bindings.conf"
+BEGIN_MARKER="-- >>> omarchy-dotfiles (managed) >>>"
+END_MARKER="-- <<< omarchy-dotfiles (managed) <<<"
 
-# --- input.conf: Set keyboard layouts to US (default) + DK ---
-if [[ -f "$INPUT_CONF" ]]; then
-  sed -i 's/^\(\s*\)kb_layout\s*=.*/\1kb_layout = us,dk/' "$INPUT_CONF"
-  echo "Set kb_layout = us,dk in input.conf"
+# Drop any previous managed block, then append the current one. Re-running with
+# changed values therefore updates them instead of stacking duplicates.
+apply_block() {
+  local file="$1" block="$2"
+  sed -i "/^${BEGIN_MARKER}$/,/^${END_MARKER}$/d" "$file"
+  printf '\n%s\n%s\n%s\n' "$BEGIN_MARKER" "$block" "$END_MARKER" >>"$file"
+}
 
-  # Disable mouse acceleration (flat 1:1 profile). The Omarchy default ships this
-  # line commented as "# accel_profile = flat"; match it whether commented or not.
-  if grep -qE '^\s*#?\s*accel_profile\s*=' "$INPUT_CONF"; then
-    sed -i 's/^\(\s*\)#\?\s*accel_profile\s*=.*/\1accel_profile = flat/' "$INPUT_CONF"
-  else
-    # No line to replace — insert one inside the input { } block.
-    sed -i '/^input {/a\  accel_profile = flat' "$INPUT_CONF"
-  fi
-  echo "Set accel_profile = flat in input.conf"
+# --- input.lua: US + Danish keyboard layouts, no mouse acceleration ---
+if [[ -f "$INPUT_LUA" ]]; then
+  apply_block "$INPUT_LUA" 'hl.config({
+  input = {
+    kb_layout = "us,dk",
+    accel_profile = "flat",
+  },
+})'
+  echo "Set kb_layout = us,dk and accel_profile = flat in input.lua"
 else
-  echo "WARNING: $INPUT_CONF not found"
+  echo "WARNING: $INPUT_LUA not found"
 fi
 
-# --- bindings.conf: Add language switch keybind (Alt + Super + .) ---
-if [[ -f "$BINDINGS_CONF" ]]; then
-  if ! grep -q 'switchxkblayout' "$BINDINGS_CONF"; then
-    sed -i '/^# Overwrite existing bindings/i bindd = SUPER ALT, period, Switch keyboard layout, exec, hyprctl switchxkblayout all next' "$BINDINGS_CONF"
-    echo "Added language switch keybind (Super + Alt + .)"
-  else
-    echo "Language switch keybind already present"
-  fi
-
-  # --- Drop any previous Super + Shift + L Lazygit binding ---
-  if grep -q 'SUPER SHIFT, L, Lazygit' "$BINDINGS_CONF"; then
-    sed -i '/SUPER SHIFT, L, Lazygit/d' "$BINDINGS_CONF"
-    echo "Removed stale Lazygit keybind (Super + Shift + L)"
-  fi
-
-  # --- Lazygit keybind (Super + Shift + G), opens in ~/Work/teameffect-v2 ---
-  if ! grep -q 'omarchy-launch-tui lazygit' "$BINDINGS_CONF"; then
-    sed -i '/^# Overwrite existing bindings/i bindd = SUPER SHIFT, G, Lazygit, exec, omarchy-launch-tui lazygit -p /home/jonas/Work/teameffect-v2' "$BINDINGS_CONF"
-    echo "Added Lazygit keybind (Super + Shift + G)"
-  else
-    echo "Lazygit keybind already present"
-  fi
+# --- bindings.lua: Super + Alt + . cycles the keyboard layout ---
+if [[ -f "$BINDINGS_LUA" ]]; then
+  apply_block "$BINDINGS_LUA" 'o.bind("SUPER + ALT + PERIOD", "Switch keyboard layout", "hyprctl switchxkblayout all next")'
+  echo "Added language switch keybind (Super + Alt + .)"
 else
-  echo "WARNING: $BINDINGS_CONF not found"
+  echo "WARNING: $BINDINGS_LUA not found"
 fi
 
-# --- autostart.conf: Start 1Password on login for SSH agent ---
-AUTOSTART_CONF="$HOME/.config/hypr/autostart.conf"
-if [[ -f "$AUTOSTART_CONF" ]]; then
-  if ! grep -q '1password' "$AUTOSTART_CONF"; then
-    echo 'exec-once = uwsm-app -- 1password --silent' >> "$AUTOSTART_CONF"
-    echo "Added 1Password autostart for SSH agent"
+# Hyprland auto-reloads on save, but reload explicitly so we can surface errors.
+if command -v hyprctl &>/dev/null && [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+  hyprctl reload >/dev/null
+  # A clean config prints only whitespace (older builds print "no errors").
+  errors="$(hyprctl configerrors | tr -d '[:space:]')"
+  if [[ -z "$errors" || "$errors" == *"noerrors"* ]]; then
+    echo "Hyprland reloaded, config OK"
   else
-    echo "1Password autostart already present"
+    echo "WARNING: hyprctl configerrors reported:"
+    echo "$errors"
   fi
 else
-  echo "WARNING: $AUTOSTART_CONF not found"
+  echo "Hyprland not running — changes apply on next login"
 fi
-
-# --- hypridle.conf: Lock screen after 3 minutes ---
-bash "$DIR/setup-hypridle.sh"

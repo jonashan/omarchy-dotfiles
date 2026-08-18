@@ -1,5 +1,6 @@
 #!/bin/bash
 # Runs the local dev services (Postgres + Redis) as Docker containers.
+# Assumes the user is in the `docker` group (Omarchy adds you on install).
 # Containers restart automatically (unless-stopped), so this only needs
 # to create them once; re-runs just start them if they were stopped.
 set -euo pipefail
@@ -11,12 +12,14 @@ fi
 
 run_service() {
   local name="$1"; shift
-  if [[ -n "$(sudo docker ps -q -f "name=^${name}$")" ]]; then
+  if [[ -n "$(docker ps -q -f "name=^${name}$")" ]]; then
     echo "Already running: $name"
-  elif [[ -n "$(sudo docker ps -aq -f "name=^${name}$")" ]]; then
-    sudo docker start "$name" >/dev/null && echo "Started: $name"
+  elif [[ -n "$(docker ps -aq -f "name=^${name}$")" ]]; then
+    docker start "$name" >/dev/null && echo "Started: $name"
   else
-    sudo docker run -d --restart unless-stopped "$@" --name="$name" >/dev/null && echo "Created: $name"
+    # --name must precede the image; anything after it is the container's own
+    # command, which silently produced unnamed crash-looping containers before.
+    docker run -d --restart unless-stopped --name "$name" "$@" >/dev/null && echo "Created: $name"
   fi
 }
 

@@ -3,83 +3,6 @@
     "defaultMode": "auto"
   },
   "model": "claude-fable-5[1m]",
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "permission_prompt|elicitation_dialog",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "agent-deck hook-handler",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "agent-deck hook-handler"
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "agent-deck hook-handler"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "agent-deck hook-handler",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "agent-deck hook-handler",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "agent-deck hook-handler"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "agent-deck hook-handler",
-            "async": true
-          }
-        ]
-      }
-    ]
-  },
   "extraKnownMarketplaces": {
     "ponytail": {
       "source": {
@@ -89,11 +12,12 @@
     }
   },
   "tui": "fullscreen",
+  "theme": "dark",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "statusLine": {
     "type": "command",
-    "command": "bash /home/jonas/.claude/statusline-command.sh"
+    "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
     "ponytail@ponytail": true

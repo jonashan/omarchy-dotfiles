@@ -1,120 +1,51 @@
 #!/bin/bash
-# Removes unwanted web apps and configures Google Calendar
+# Removes the preinstalled Omarchy web apps this desktop doesn't use and
+# installs the ones it does.
+#
+# Note: these launchers are package-owned templates in
+# /usr/share/omarchy/applications/, copied into ~/.local/share/applications/.
+# `omarchy-refresh-applications` restores every one of them, so re-run this
+# script after a refresh.
 set -euo pipefail
 
-BINDINGS="$HOME/.config/hypr/bindings.conf"
+APPS_DIR="$HOME/.local/share/applications"
+
+REMOVE_APPS=("Basecamp" "HEY" "WhatsApp" "Zoom")
+
+# name|url — installed with an auto-fetched site icon.
+INSTALL_APPS=(
+  "Google Calendar|https://calendar.google.com"
+  "Gmail|https://mail.google.com"
+  "Linear|https://linear.app"
+  "Messenger|https://www.messenger.com"
+  "TeamEffect V1 - Repo|https://github.com/teameffect/teameffect"
+  "TeamEffect V2 - Repo|https://github.com/teameffect/teameffect-v2"
+)
 
 # --- Remove unwanted web apps ---
-REMOVE_APPS=("Basecamp" "Fizzy" "HEY" "WhatsApp" "Zoom")
-
 for app in "${REMOVE_APPS[@]}"; do
-  if [[ -f "$HOME/.local/share/applications/$app.desktop" ]]; then
+  if [[ -f "$APPS_DIR/$app.desktop" ]]; then
     omarchy-webapp-remove "$app"
   else
     echo "$app not installed, skipping"
   fi
 done
 
-# --- Install Google Calendar web app (idempotent) ---
-if [[ ! -f "$HOME/.local/share/applications/Google Calendar.desktop" ]]; then
-  omarchy-webapp-install "Google Calendar" "https://calendar.google.com" ""
-  echo "Installed Google Calendar web app"
-else
-  echo "Google Calendar already installed"
-fi
+# --- Install wanted web apps ---
+for entry in "${INSTALL_APPS[@]}"; do
+  name="${entry%%|*}"
+  url="${entry#*|}"
 
-# --- Install Gmail web app (idempotent) ---
-if [[ ! -f "$HOME/.local/share/applications/Gmail.desktop" ]]; then
-  omarchy-webapp-install "Gmail" "https://mail.google.com" ""
-  echo "Installed Gmail web app"
-else
-  echo "Gmail already installed"
-fi
-
-# --- Install Linear web app (idempotent) ---
-if [[ ! -f "$HOME/.local/share/applications/Linear.desktop" ]]; then
-  omarchy-webapp-install "Linear" "https://linear.app" ""
-  echo "Installed Linear web app"
-else
-  echo "Linear already installed"
-fi
-
-# --- Install Messenger web app (idempotent) ---
-if [[ ! -f "$HOME/.local/share/applications/Messenger.desktop" ]]; then
-  omarchy-webapp-install "Messenger" "https://www.messenger.com" ""
-  echo "Installed Messenger web app"
-else
-  echo "Messenger already installed"
-fi
-
-# --- Install TeamEffect V1 - Repo web app (idempotent) ---
-if [[ ! -f "$HOME/.local/share/applications/TeamEffect V1 - Repo.desktop" ]]; then
-  omarchy-webapp-install "TeamEffect V1 - Repo" "https://github.com/teameffect/teameffect" ""
-  echo "Installed TeamEffect V1 - Repo web app"
-else
-  echo "TeamEffect V1 - Repo already installed"
-fi
-
-# --- Install TeamEffect V2 - Repo web app (idempotent) ---
-if [[ ! -f "$HOME/.local/share/applications/TeamEffect V2 - Repo.desktop" ]]; then
-  omarchy-webapp-install "TeamEffect V2 - Repo" "https://github.com/teameffect/teameffect-v2" ""
-  echo "Installed TeamEffect V2 - Repo web app"
-else
-  echo "TeamEffect V2 - Repo already installed"
-fi
-
-# --- Patch keybindings ---
-if [[ -f "$BINDINGS" ]]; then
-  # Remove HEY Calendar keybind (SUPER SHIFT, C)
-  sed -i '/hey\.com\/calendar/d' "$BINDINGS"
-
-  # Remove HEY Email keybind (SUPER SHIFT, E)
-  sed -i '/hey\.com/d' "$BINDINGS"
-
-  # Remove WhatsApp keybind
-  sed -i '/whatsapp/Id' "$BINDINGS"
-
-  # Remove Signal keybind
-  sed -i '/signal-desktop/d' "$BINDINGS"
-
-  # Add Google Calendar keybind if not present
-  if ! grep -q 'Google Calendar' "$BINDINGS"; then
-    sed -i '/^# Overwrite existing bindings/i bindd = SUPER SHIFT, C, Google Calendar, exec, omarchy-launch-webapp "https://calendar.google.com"' "$BINDINGS"
-    echo "Added Google Calendar keybind (Super + Shift + C)"
-  else
-    echo "Google Calendar keybind already present"
+  if [[ -f "$APPS_DIR/$name.desktop" ]]; then
+    echo "Already installed: $name"
+    continue
   fi
 
-  # Add Gmail keybind if not present
-  if ! grep -q 'Gmail' "$BINDINGS"; then
-    sed -i '/^# Overwrite existing bindings/i bindd = SUPER SHIFT, E, Gmail, exec, omarchy-launch-webapp "https://mail.google.com"' "$BINDINGS"
-    echo "Added Gmail keybind (Super + Shift + E)"
+  # An empty icon argument makes omarchy-webapp-install fetch the site's own
+  # icon; it exits non-zero if that fails, which must not abort the whole run.
+  if omarchy-webapp-install "$name" "$url" ""; then
+    echo "Installed: $name"
   else
-    echo "Gmail keybind already present"
-  fi
-
-  # Add Linear keybind if not present
-  if ! grep -q 'Linear' "$BINDINGS"; then
-    sed -i '/^# Overwrite existing bindings/i bindd = SUPER SHIFT, K, Linear, exec, omarchy-launch-webapp "https://linear.app"' "$BINDINGS"
-    echo "Added Linear keybind (Super + Shift + K)"
-  else
-    echo "Linear keybind already present"
-  fi
-else
-  echo "WARNING: $BINDINGS not found"
-fi
-
-# --- Uninstall unwanted system packages (runs last; needs sudo) ---
-REMOVE_PKGS=("signal-desktop")
-
-for pkg in "${REMOVE_PKGS[@]}"; do
-  if pacman -Q "$pkg" &>/dev/null; then
-    if sudo -n true 2>/dev/null || [[ -t 0 ]]; then
-      sudo pacman -Rns --noconfirm "$pkg" && echo "Uninstalled $pkg"
-    else
-      echo "WARNING: cannot uninstall $pkg without a TTY for sudo. Run: sudo pacman -Rns $pkg"
-    fi
-  else
-    echo "$pkg not installed, skipping"
+    echo "WARNING: could not install $name (icon fetch failed?)"
   fi
 done

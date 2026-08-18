@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-Personal dotfiles for an [Omarchy](https://omarchy.org) (Arch Linux + Hyprland) desktop. Rather than storing config files to copy into place, every script here **patches the live Omarchy-managed configs in `~/.config/`** in place. The repo owns the deltas, not the files.
+Personal dotfiles for an [Omarchy](https://omarchy.org) 4 "Quattro" (Arch Linux + Hyprland) desktop. Rather than storing config files to copy into place, most scripts here **patch the live Omarchy-managed configs in `~/.config/` in place**. The repo owns the deltas, not the files.
 
 Sub-setups live in two top-level buckets: `config/` (customize existing config) and `install/` (install/remove software). Each bucket has a `setup.sh` that runs every subfolder's `setup.sh` in alphabetical order, so adding a new one is just dropping a `<name>/setup.sh` into the right bucket — no orchestrator edit needed.
 
-The exceptions to the patch-in-place rule are `config/claude/` and `config/agent-deck/`, which own their files wholesale and **symlink** them into place so edits flow straight back into this repo: `config/claude/setup.sh` links the Claude Code skills and `settings.json` into `~/.claude/`, and `config/agent-deck/setup.sh` links `config.toml` into `~/.config/agent-deck/`.
+The exceptions to the patch-in-place rule are `config/claude/` and `config/aliases/`, which own their files wholesale and **symlink** them into place (`~/.claude/` and `~/.bash_aliases`) so edits flow straight back into this repo.
 
 ## Commands
 
@@ -16,15 +16,11 @@ The exceptions to the patch-in-place rule are `config/claude/` and `config/agent
 ./setup.sh                          # Apply everything (installs, then configs)
 bash install/setup.sh               # Run every installer in install/
 bash config/setup.sh                # Apply every config in config/
-bash install/packages/setup.sh      # Install AUR/repo packages (agent-deck-bin, ...)
-bash install/webapps/setup.sh       # Install/remove PWAs + their keybinds
-bash install/dev-services/setup.sh  # Run Postgres + Redis dev containers (docker, needs sudo)
-bash config/hypr/setup.sh           # Hyprland: keyboard layouts, keybinds, autostart, idle lock
-bash config/hypr/setup-hypridle.sh  # Idle lock only (called by config/hypr/setup.sh)
-bash config/waybar/setup.sh         # Waybar language indicator
-bash config/aliases/setup.sh        # Append shell aliases to ~/.bashrc
+bash install/webapps/setup.sh       # Install/remove web apps
+bash install/dev-services/setup.sh  # Run Postgres + Redis dev containers (docker)
+bash config/hypr/setup.sh           # Hyprland: keyboard layouts, mouse accel
+bash config/aliases/setup.sh        # Symlink aliases.sh to ~/.bash_aliases + source it
 bash config/claude/setup.sh         # Symlink Claude Code skills + settings.json into ~/.claude
-bash config/agent-deck/setup.sh     # Symlink Agent Deck config.toml into ~/.config/agent-deck
 ```
 
 There is no build, lint, or test step — these are bash scripts run directly on the target machine. `setup.sh` runs `install/setup.sh` then `config/setup.sh`; each of those runs its subfolders' `setup.sh` alphabetically. All sub-setups are independent and idempotent, so order does not matter.
@@ -32,23 +28,28 @@ There is no build, lint, or test step — these are bash scripts run directly on
 ## Conventions that matter
 
 **Idempotency is mandatory.** Every script must be safe to re-run. The established patterns:
-- `grep -q <marker>` before appending/inserting, then echo "already present" on the else branch.
-- Check for a `.desktop` file before `omarchy-webapp-install`.
-- For one-time settings, `sed -i 's/^key.*/key = newval/'` (replace, not append).
-- When changing a value that may already exist from a prior version, **remove the stale line first, then add the new one** (see the Lazygit keybind rewrite in `config/hypr/setup.sh`).
+- Check for a `.desktop` file before `omarchy-webapp-install` / `omarchy-webapp-remove`.
+- For managed blocks in Omarchy's config files, **delete the marked block first, then re-append it** (see `apply_block` in `config/hypr/setup.sh`). Changed values then propagate on re-run instead of stacking duplicates.
+- Guard anything that can fail on a cold machine (network, missing binary) so `set -e` doesn't abort the whole run.
 
-**Patching technique.** Insertions into Hyprland's `bindings.conf` anchor on the `# Overwrite existing bindings` comment via `sed -i '/marker/i ...'`. Waybar's JSONC is patched with `sed` insertions keyed off existing module names. `config/hypr/setup-hypridle.sh` uses an inline `python3` script for multi-line regex edits that sed can't do cleanly.
+**Patching technique.** Omarchy 4 configures Hyprland in **Lua**, not `.conf` — `~/.config/hypr/{bindings,input,autostart,monitors,looknfeel}.lua`. These user files are loaded *after* Omarchy's packaged defaults, so a later `hl.config({...})` call overrides only the keys it sets, and `o.bind(...)` adds bindings. To override a default binding you must `hl.unbind("...")` first. Append a marked block rather than uncommenting the shipped template, so package updates can rewrite the template freely.
 
-**Reload after patching.** Config changes only take effect after the relevant daemon restarts: `omarchy-restart-waybar`, or `killall hypridle; hypridle &`. Include the reload in the script.
+**Never edit `/usr/share/omarchy/`.** It is package-owned and overwritten on `omarchy update`. Reading it is safe and encouraged — `/usr/share/omarchy/default/hypr/bindings/applications.lua` is the source of truth for default keybinds.
 
-**Omarchy helpers** are the intended API for desktop changes — prefer them over hand-editing where one exists: `omarchy-webapp-install`, `omarchy-webapp-remove`, `omarchy-launch-webapp`, `omarchy-launch-tui`, `omarchy-restart-waybar`. For packages, `omarchy-pkg-add <pkg>` installs from the **official repos** (`pacman -S`) while `omarchy-pkg-aur-add <pkg>` installs from the **AUR** (`yay -S`) — pick by where the package lives (`-bin` / other AUR names need the AUR helper). Both are idempotent. The `omarchy` skill is available for broader desktop customization.
+**Reload after patching.** Hyprland auto-reloads on save; still run `hyprctl reload` and check `hyprctl configerrors`. `~/.config/omarchy/shell.json` (bar, idle, lock) hot-reloads on save.
 
-**All scripts** start with `set -euo pipefail` and `WARNING: ... not found` (don't hard-fail) when a target config is absent, except where a missing file is fatal.
+**Omarchy helpers** are the intended API for desktop changes — prefer them over hand-editing. The `omarchy <group> <action>` dispatcher is the stable form (`omarchy pkg add`, `omarchy restart shell`, `omarchy theme set`); the underlying `omarchy-*` binaries still exist on `PATH`. Run `omarchy commands` to list everything. The `omarchy` skill is available for broader desktop customization.
+
+**All scripts** start with `set -euo pipefail` and warn (`WARNING: ... not found`) rather than hard-failing when a target config is absent.
 
 ## Hardcoded specifics to know
 
-- Keyboard layouts: `us,dk`; switch with Super+Alt+. ; mouse accel disabled.
-- Idle lock at 180s (`config/hypr/setup-hypridle.sh`); screensaver listener stripped out.
-- Work paths are hardcoded to this machine: `~/Work/TeamEffect/` (`te`), `~/Work/teameffect-v2/` (`te2`); Lazygit keybind opens `/home/jonas/Work/teameffect-v2`.
-- Keybinds: Super+Shift+C Calendar, +E Gmail, +K Linear, +G Lazygit.
-- 1Password autostarts (`--silent`) on login to provide the SSH agent.
+- Keyboard layouts: `us,dk`; switch with Super+Alt+. ; mouse accel disabled (`config/hypr/setup.sh`).
+- Web apps installed: Google Calendar, Gmail, Linear, Messenger, TeamEffect V1/V2 repos.
+- Web apps removed: Basecamp, HEY, WhatsApp, Zoom. `omarchy-refresh-applications` restores them, so re-run the script after a refresh.
+- Dev containers: Postgres on `:5432` (password `postgres`), Redis on `:6379`, both `--restart unless-stopped`.
+- Shell aliases live in `config/aliases/aliases.sh`. Edit it directly — it is symlinked to `~/.bash_aliases` and applies in the next shell; no re-run needed.
+
+## Not managed here
+
+Deliberately out of scope, after the Quattro cleanup: package installs, the status bar (Omarchy's shell ships a keyboard-layout widget), and idle/lock timing (`~/.config/omarchy/shell.json`).
