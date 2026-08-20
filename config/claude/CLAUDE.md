@@ -4,7 +4,8 @@
   - TeamEffect legacy app - `~/Work/TeamEffect/`
   - TeamEffect -` ~/Work/teameffect-v2/`
   - TeamEffect landingpage - `~/Work/teameffect-landingpage/`
-- Second brain / Notes system - `~/Documents/SecondBrainNew/`
+  - TeamEffect version 2 android app - `~/Work/teameffect-v2-android/`
+- Second brain / Notes system - `~/Documents/SecondBrain/`
 
 ## Communication style
 Be extremely concise. Sacrifice grammar for the sake of concision.
