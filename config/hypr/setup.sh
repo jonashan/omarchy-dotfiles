@@ -22,15 +22,14 @@ apply_block() {
   printf '\n%s\n%s\n%s\n' "$BEGIN_MARKER" "$block" "$END_MARKER" >>"$file"
 }
 
-# --- input.lua: US + Danish keyboard layouts, no mouse acceleration ---
+# --- input.lua: no mouse acceleration (kb_layout is set per-machine, not here) ---
 if [[ -f "$INPUT_LUA" ]]; then
   apply_block "$INPUT_LUA" 'hl.config({
   input = {
-    kb_layout = "us,dk",
     accel_profile = "flat",
   },
 })'
-  echo "Set kb_layout = us,dk and accel_profile = flat in input.lua"
+  echo "Set accel_profile = flat in input.lua"
 else
   echo "WARNING: $INPUT_LUA not found"
 fi

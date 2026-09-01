@@ -45,7 +45,7 @@ There is no build, lint, or test step — these are bash scripts run directly on
 
 ## Hardcoded specifics to know
 
-- Keyboard layouts: `us,dk`; switch with Super+Alt+. ; mouse accel disabled (`config/hypr/setup.sh`).
+- Keyboard layouts are set per-machine, not managed here; switch bind is Super+Alt+. ; mouse accel disabled (`config/hypr/setup.sh`).
 - Web apps installed: Google Calendar, Gmail, Linear, Messenger, TeamEffect V1/V2 repos.
 - Web apps removed: Basecamp, HEY, WhatsApp, Zoom. `omarchy-refresh-applications` restores them, so re-run the script after a refresh.
 - Dev containers: Postgres on `:5432` (password `postgres`), Redis on `:6379`, both `--restart unless-stopped`.
