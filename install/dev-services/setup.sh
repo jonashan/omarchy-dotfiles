@@ -1,6 +1,6 @@
 #!/bin/bash
 # Runs the local dev services (Postgres + Redis) as Docker containers.
-# Assumes the user is in the `docker` group (Omarchy adds you on install).
+# Ensures the docker daemon is enabled and the user is in the `docker` group.
 # Containers restart automatically (unless-stopped), so this only needs
 # to create them once; re-runs just start them if they were stopped.
 set -euo pipefail
@@ -8,6 +8,15 @@ set -euo pipefail
 if ! command -v docker &>/dev/null; then
   echo "WARNING: docker not found — skipping dev services"
   exit 0
+fi
+
+systemctl is-active --quiet docker || sudo systemctl enable --now docker
+
+if ! id -nG | grep -qw docker; then
+  sudo usermod -aG docker "$USER"
+  echo "Added $USER to docker group (takes full effect after next login)"
+  # Re-run this script with the new group active so it works right now too.
+  exec sg docker -c "bash $0"
 fi
 
 run_service() {
