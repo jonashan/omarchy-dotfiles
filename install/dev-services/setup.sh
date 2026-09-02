@@ -16,7 +16,7 @@ if ! id -nG | grep -qw docker; then
   sudo usermod -aG docker "$USER"
   echo "Added $USER to docker group (takes full effect after next login)"
   # Re-run this script with the new group active so it works right now too.
-  exec sg docker -c "bash $0"
+  exec sudo -u "$USER" -g docker bash "$0"
 fi
 
 run_service() {
