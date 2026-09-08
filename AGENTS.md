@@ -1,1 +1,1 @@
-Important! Read @CLAUDE.md and follow it strictly!
+Read @CLAUDE.md and always follow the instructions

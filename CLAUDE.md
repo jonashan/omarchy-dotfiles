@@ -8,7 +8,7 @@ Personal dotfiles for an [Omarchy](https://omarchy.org) 4 "Quattro" (Arch Linux 
 
 Sub-setups live in two top-level buckets: `config/` (customize existing config) and `install/` (install/remove software). Each bucket has a `setup.sh` that runs every subfolder's `setup.sh` in alphabetical order, so adding a new one is just dropping a `<name>/setup.sh` into the right bucket — no orchestrator edit needed.
 
-The exceptions to the patch-in-place rule are `config/claude/` and `config/aliases/`, which own their files wholesale and **symlink** them into place (`~/.claude/` and `~/.bash_aliases`) so edits flow straight back into this repo.
+The exceptions to the patch-in-place rule are `config/claude/`, `config/skills/`, and `config/aliases/`, which own their files wholesale and **symlink** them into place. Claude-specific files are linked into `~/.claude/`; shared Agent Skills are linked into Claude, Codex, and OpenCode; aliases are linked into `~/.bash_aliases`.
 
 ## Commands
 
@@ -21,7 +21,8 @@ bash install/dev-services/setup.sh  # Run Postgres + Redis dev containers (docke
 bash config/hypr/setup.sh           # Hyprland: keyboard layouts, mouse accel
 bash config/shell/setup.sh          # Omarchy shell: lock screen after 1 min idle
 bash config/aliases/setup.sh        # Symlink aliases.sh to ~/.bash_aliases + source it
-bash config/claude/setup.sh         # Symlink Claude Code skills + settings.json into ~/.claude
+bash config/claude/setup.sh         # Symlink Claude Code-specific config into ~/.claude
+bash config/skills/setup.sh         # Link shared skills into Claude, Codex, and OpenCode
 ```
 
 There is no build, lint, or test step — these are bash scripts run directly on the target machine. `setup.sh` runs `install/setup.sh` then `config/setup.sh`; each of those runs its subfolders' `setup.sh` alphabetically. All sub-setups are independent and idempotent, so order does not matter.
@@ -50,6 +51,7 @@ There is no build, lint, or test step — these are bash scripts run directly on
 - Web apps removed: Basecamp, HEY, WhatsApp, Zoom. `omarchy-refresh-applications` restores them, so re-run the script after a refresh.
 - Dev containers: Postgres on `:5432` (password `postgres`), Redis on `:6379`, both `--restart unless-stopped`.
 - Shell aliases live in `config/aliases/aliases.sh`. Edit it directly — it is symlinked to `~/.bash_aliases` and applies in the next shell; no re-run needed.
+- Agent Skills live in `config/skills/`. Add or edit a skill there; re-run setup to link it into `~/.claude/skills`, `~/.codex/skills`, and `~/.config/opencode/skills`.
 
 ## Not managed here
 
