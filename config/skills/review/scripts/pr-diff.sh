@@ -1,0 +1,1 @@
+../../qa/scripts/pr-diff.sh
