@@ -34,15 +34,17 @@ else
   echo "WARNING: $INPUT_LUA not found"
 fi
 
-# --- bindings.lua: layout switch + Linear web app ---
+# --- bindings.lua: layout switch + web apps + Bujo ---
 if [[ -f "$BINDINGS_LUA" ]]; then
   apply_block "$BINDINGS_LUA" 'o.bind("SUPER + ALT + PERIOD", "Switch keyboard layout", "hyprctl switchxkblayout all next")
 o.bind("SUPER + SHIFT + L", "Linear", { webapp = "https://linear.app" })
 hl.unbind("SUPER + SHIFT + E")
 o.bind("SUPER + SHIFT + E", "Email", { webapp = "https://mail.google.com" })
 hl.unbind("SUPER + SHIFT + C")
-o.bind("SUPER + SHIFT + C", "Calendar", { webapp = "https://calendar.google.com" })'
-  echo "Added keybinds: language switch, Linear, Gmail (Super+Shift+E), Google Calendar (Super+Shift+C)"
+o.bind("SUPER + SHIFT + C", "Calendar", { webapp = "https://calendar.google.com" })
+o.bind("SUPER + CTRL + J", "Todos", "omarchy-shell shell toggle jsc.bujo")
+o.bind("SUPER + CTRL + ALT + J", "Capture a todo", "bujo add-interactive")'
+  echo "Added keybinds: language switch, Linear, Gmail (Super+Shift+E), Google Calendar (Super+Shift+C), Bujo (Super+Ctrl+J)"
 else
   echo "WARNING: $BINDINGS_LUA not found"
 fi
