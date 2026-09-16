@@ -42,9 +42,10 @@ hl.unbind("SUPER + SHIFT + E")
 o.bind("SUPER + SHIFT + E", "Email", { webapp = "https://mail.google.com" })
 hl.unbind("SUPER + SHIFT + C")
 o.bind("SUPER + SHIFT + C", "Calendar", { webapp = "https://calendar.google.com" })
-o.bind("SUPER + CTRL + J", "Todos", "omarchy-shell shell toggle jsc.bujo")
-o.bind("SUPER + CTRL + ALT + J", "Capture a todo", "bujo add-interactive")'
-  echo "Added keybinds: language switch, Linear, Gmail (Super+Shift+E), Google Calendar (Super+Shift+C), Bujo (Super+Ctrl+J)"
+o.bind("SUPER + CTRL + J", "Todos", "omarchy-shell shell toggle io.github.jonashan.bujo")
+o.bind("SUPER + CTRL + ALT + J", "Capture a todo", "bujo add-interactive")
+o.bind("SUPER + CTRL + SHIFT + J", "Jot a note", "bujo note-interactive")'
+  echo "Added keybinds: language switch, Linear, Gmail (Super+Shift+E), Google Calendar (Super+Shift+C), Bujo (Super+Ctrl+J, +Alt todo, +Shift note)"
 else
   echo "WARNING: $BINDINGS_LUA not found"
 fi
