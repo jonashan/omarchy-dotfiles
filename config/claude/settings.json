@@ -33,6 +33,7 @@
   },
   "effortLevel": "xhigh",
   "tui": "fullscreen",
+  "remoteControlAtStartup": true,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "dark"
