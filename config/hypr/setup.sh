@@ -45,8 +45,24 @@ o.bind("SUPER + SHIFT + C", "Calendar", { webapp = "https://calendar.google.com"
 o.bind("SUPER + CTRL + J", "Todos", "omarchy-shell shell toggle io.github.jonashan.bujo")
 o.bind("SUPER + CTRL + ALT + J", "Capture a todo", "bujo add-interactive")
 o.bind("SUPER + CTRL + SHIFT + J", "Jot a note", "bujo note-interactive")
-o.bind("SUPER + CTRL + SHIFT + O", "Daily note in Obsidian", "bujo open")'
-  echo "Added keybinds: language switch, Linear, Gmail (Super+Shift+E), Google Calendar (Super+Shift+C), Bujo (Super+Ctrl+J, +Alt todo, +Shift note, +Shift+O the note in Obsidian)"
+o.bind("SUPER + CTRL + SHIFT + O", "Daily note in Obsidian", "bujo open")
+-- Super+Enter: T3 Code -> Ctrl+O (open in Zed); Claude Desktop -> terminal in the
+-- session cwd (written by the cwd-export mod, config/claude-mods); else default
+hl.unbind("SUPER + RETURN")
+o.bind("SUPER + RETURN", "Terminal", function()
+  local w = hl.get_active_window()
+  if w and w.class == "com.t3tools.T3Code" then
+    hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL", key = "O", state = "down" }))
+    hl.timer(function()
+      hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL", key = "O", state = "up" }))
+    end, { timeout = 50, type = "oneshot" })
+  elseif w and w.class == "com.anthropic.Claude" then
+    hl.exec_cmd([[setsid uwsm-app -- xdg-terminal-exec --dir="$(cat ~/.cache/claude-cwd 2>/dev/null || echo ~)"]])
+  else
+    hl.exec_cmd("omarchy-launch-terminal")
+  end
+end)'
+  echo "Added keybinds: language switch, Linear, Gmail (Super+Shift+E), Google Calendar (Super+Shift+C), Bujo (Super+Ctrl+J, +Alt todo, +Shift note, +Shift+O the note in Obsidian), Super+Enter (T3 Code / Claude Desktop cwd)"
 else
   echo "WARNING: $BINDINGS_LUA not found"
 fi

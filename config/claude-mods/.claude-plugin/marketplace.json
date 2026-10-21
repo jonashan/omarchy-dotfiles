@@ -1,0 +1,7 @@
+{
+  "name": "omarchy-dotfiles",
+  "owner": { "name": "Jonas" },
+  "plugins": [
+    { "name": "cwd-export", "source": "./plugins/cwd-export", "description": "Writes the active session's cwd to ~/.cache/claude-cwd (read by Super+Enter)" }
+  ]
+}

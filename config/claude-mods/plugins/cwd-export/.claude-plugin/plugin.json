@@ -1,0 +1,1 @@
+{ "name": "cwd-export", "version": "0.1.0", "description": "Writes the active session's cwd to ~/.cache/claude-cwd for Super+Enter" }

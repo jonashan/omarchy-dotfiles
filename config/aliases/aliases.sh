@@ -12,3 +12,5 @@ alias ld='lazydocker'
 # --- Projects ---
 alias te='cd ~/Work/TeamEffect/'
 alias te2='cd ~/Work/teameffect-v2/'
+
+alias gam="/home/jsc/bin/gam7/gam"

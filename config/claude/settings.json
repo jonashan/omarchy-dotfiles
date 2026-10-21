@@ -2,6 +2,7 @@
   "permissions": {
     "defaultMode": "auto"
   },
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -21,7 +22,9 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "factory@ai-factory": true,
+    "cwd-export@omarchy-dotfiles": true
   },
   "extraKnownMarketplaces": {
     "ponytail": {
@@ -29,12 +32,64 @@
         "source": "github",
         "repo": "DietrichGebert/ponytail"
       }
+    },
+    "ai-factory": {
+      "source": {
+        "source": "git",
+        "url": "git@github.com:jonashan/ai-factory.git"
+      },
+      "autoUpdate": true
+    },
+    "omarchy-dotfiles": {
+      "source": {
+        "source": "directory",
+        "path": "/home/jsc/omarchy-dotfiles/config/claude-mods"
+      }
     }
   },
+  "outputStyle": "Concise",
   "effortLevel": "xhigh",
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "xhigh"
+    },
+    "claude-fable-5-1": {
+      "effortLevel": "xhigh"
+    }
+  },
   "tui": "fullscreen",
-  "remoteControlAtStartup": true,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "theme": "dark"
+  "theme": "dark",
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: Not queryable here (no git remotes in this repo — repo path is /home/jsc with 0 tracked files); assume private unless shown otherwise",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured",
+      "**Default / protected branches**: unknown — no remotes configured, origin/HEAD unset, not queryable via gh",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine with open internet",
+      "**Source control**: The trusted repo (this checkout at /home/jsc) — no remotes configured, no additional orgs configured",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar — note: unrelated sibling checkouts under ~/Work contain files matching sensitive patterns (e.g. .env.production, credentials.yml.enc, .kamal/secrets) but those repos are out of scope for this project and not vetted",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development, and personal system/config administration (dotfiles, window manager, audio) based on observed CLI usage (hyprctl, pactl, systemctl)",
+      "**Trusted repo**: The git checkout at /home/jsc (its working directory) — no remotes configured",
+      "**Org-specific CLIs**: None configured — observed non-standard CLIs (op, hyprctl, ob, pactl, journalctl, systemctl) appear to be personal-machine tools rather than org-specific tooling",
+      "routine under ~/ prefix: personal dotfiles and config administration only, scoped to this machine"
+    ]
+  }
 }

@@ -23,6 +23,7 @@ bash config/shell/setup.sh          # Omarchy shell: lock screen after 1 min idl
 bash config/aliases/setup.sh        # Symlink aliases.sh to ~/.bash_aliases + source it
 bash config/claude/setup.sh         # Symlink Claude Code-specific config into ~/.claude
 bash config/skills/setup.sh         # Link shared skills into Claude, Codex, and OpenCode
+bash config/claude-mods/setup.sh    # Install Claude Code mods (plugins) from this repo at user scope
 ```
 
 There is no build, lint, or test step — these are bash scripts run directly on the target machine. `setup.sh` runs `install/setup.sh` then `config/setup.sh`; each of those runs its subfolders' `setup.sh` alphabetically. All sub-setups are independent and idempotent, so order does not matter.
@@ -51,6 +52,7 @@ There is no build, lint, or test step — these are bash scripts run directly on
 - Web apps removed: Basecamp, HEY, WhatsApp, Zoom. `omarchy-refresh-applications` restores them, so re-run the script after a refresh.
 - Dev containers: Postgres on `:5432` (password `postgres`), Redis on `:6379`, both `--restart unless-stopped`.
 - Shell aliases live in `config/aliases/aliases.sh`. Edit it directly — it is symlinked to `~/.bash_aliases` and applies in the next shell; no re-run needed.
+- Claude Code mods live in `config/claude-mods/plugins/` (a directory marketplace, read live from the repo; `/reload-plugins` after edits). `cwd-export` writes the session cwd to `~/.cache/claude-cwd`, which Super+Enter reads when Claude Desktop is focused.
 - Agent Skills live in `config/skills/`. Add or edit a skill there; re-run setup to link it into `~/.claude/skills`, `~/.codex/skills`, and `~/.config/opencode/skills`.
 
 ## Not managed here
